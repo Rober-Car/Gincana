@@ -1,6 +1,7 @@
 package com.example.gincana
 
 import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import androidx.core.widget.addTextChangedListener
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -48,6 +50,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Solicita que el mapa se cargue de forma asíncrona.
         // Cuando esté listo, se llamará automáticamente a onMapReady().
         mapFragment.getMapAsync(this)
+
+        /**
+         * Listener que detecta los cambios en el interruptor (Switch) encargado de activar o desactivar
+         * la visualización de la ubicación del usuario en el mapa.
+         *
+         *setOnCheckedChangeListener:
+         *     Listener que se ejecuta cada vez que el usuario cambia el estado del Switch.
+         *
+         * Comportamiento:
+         *     - Si el Switch está activado, se llama al método activarUbicacion(), que se encarga
+         *       de solicitar permisos y activar la capa de ubicación del mapa.
+         *
+         *     - Si el Switch está desactivado, se deshabilita la capa de ubicación del mapa
+         *       mediante map.isMyLocationEnabled = false.
+         */
+        binding.switchLocation.setOnCheckedChangeListener { _, isChecked ->
+
+            // Si el usuario activa el Switch, se intenta activar la ubicación.
+            if (isChecked) {
+                activarUbicacion()
+
+                // Si el usuario lo desactiva, se oculta la ubicación en el mapa.
+            } else {
+                map.isMyLocationEnabled = false
+            }
+        }
+
     }
 
     /**
@@ -178,56 +207,162 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Muestra un cuadro de diálogo cuando el usuario pulsa un marcador.
+     * Muestra un cuadro de diálogo personalizado cuando el usuario pulsa un marcador.
      *
-     * Este método crea un AlertDialog con:
+     * Este diálogo incluye:
      * - Un título (nombre del marcador).
-     * - Un mensaje (snippet del marcador).
+     * - Un mensaje descriptivo (snippet del marcador).
      * - Un campo de texto para introducir una contraseña.
-     * - Botón "Finalizar" que valida la contraseña.
-     * - Botón "Cancelar" que cierra el diálogo.
+     * - Un botón "Finalizar" que solo se activa cuando el usuario escribe algo.
+     * - Un botón "Cancelar" que cierra el diálogo.
      *
      * @param titulo Texto que aparecerá como título del diálogo.
      * @param descripcion Texto que aparecerá como mensaje del diálogo.
      */
     private fun mostrarDialogo(titulo: String?, descripcion: String?) {
 
-        // AlertDialog.Builder permite construir un cuadro de diálogo paso a paso.
+        // AlertDialog.Builder:
+        // Clase que permite construir un cuadro de diálogo paso a paso.
         val builder = AlertDialog.Builder(this)
 
-        // Establece el título del diálogo.
+        // Establece el título del diálogo usando el texto recibido.
         builder.setTitle(titulo)
 
-        // EditText es un campo de texto donde el usuario puede escribir.
-        val input = EditText(this)
-        input.hint = "Introduce contraseña"
-
-        // Establece el mensaje del diálogo.
+        // Establece el mensaje del diálogo (descripción del marcador).
         builder.setMessage(descripcion)
 
-        // Inserta el campo de texto dentro del diálogo.
+        // EditText:
+        // Campo de texto donde el usuario puede escribir la contraseña.
+        val input = EditText(this)
+
+        // hint:
+        // Texto gris que aparece dentro del EditText para indicar qué debe escribir el usuario.
+        input.hint = "Introduce contraseña"
+
+        // Inserta el EditText dentro del diálogo.
         builder.setView(input)
 
-        // Botón positivo: se ejecuta cuando el usuario pulsa "Finalizar".
-        builder.setPositiveButton("Finalizar") { dialog, which ->
+        // Botón positivo ("Finalizar"):
+        // Se pasa null porque luego lo sobreescribimos manualmente para controlar su comportamiento.
+        builder.setPositiveButton("Finalizar", null)
 
-            // Obtiene el texto introducido por el usuario.
+        // Botón negativo ("Cancelar"):
+        // null indica que simplemente cerrará el diálogo sin hacer nada.
+        builder.setNegativeButton("Cancelar", null)
+
+        // Crea el diálogo real a partir del builder.
+        val dialog = builder.create()
+
+        // Muestra el diálogo en pantalla.
+        dialog.show()
+
+        // Obtiene la referencia al botón "Finalizar" ya creado dentro del diálogo.
+        val boton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+        // Desactiva el botón inicialmente.
+        // Esto evita que el usuario pulse "Finalizar" sin escribir nada.
+        boton.isEnabled = false
+
+        // addTextChangedListener:
+        // Listener que detecta cambios en el texto del EditText.
+        // "it" representa el texto actual.
+        input.addTextChangedListener {
+            // Activa el botón solo si el texto NO está vacío.
+            boton.isEnabled = it?.isNotEmpty() == true
+        }
+
+        // Configura manualmente lo que ocurre al pulsar el botón "Finalizar".
+        boton.setOnClickListener {
+
+            // Obtiene el texto escrito por el usuario.
             val pass = input.text.toString()
 
             // Comprueba si la contraseña es correcta.
             if (pass == "astro") {
+
+                // Muestra un mensaje indicando que la prueba se completó.
                 Toast.makeText(this, "Prueba completada", Toast.LENGTH_SHORT).show()
+
+                // Cierra el diálogo.
+                dialog.dismiss()
+
             } else {
+
+                // Mensaje de error si la contraseña no coincide.
                 Toast.makeText(this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // Botón negativo: cierra el diálogo sin hacer nada.
-        builder.setNegativeButton("Cancelar", null)
-
-        // Muestra el diálogo en pantalla.
-        builder.show()
     }
+
+    /**
+     * Activa la capa de ubicación del mapa si el usuario ha concedido el permiso.
+     *
+     * Este método realiza dos tareas principales:
+     *
+     * 1. Comprobar si el permiso ACCESS_FINE_LOCATION está concedido.
+     * 2. Si no lo está, solicitarlo al usuario.
+     * 3. Si ya está concedido, activar la visualización de la ubicación en el mapa.
+     *
+     */
+    private fun activarUbicacion() {
+
+        // checkSelfPermission:
+        // Método que comprueba si un permiso específico está concedido.
+        // Devuelve PackageManager.PERMISSION_GRANTED si el permiso está aprobado.
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            // requestPermissions:
+            // Método que muestra al usuario la ventana del sistema para aceptar o denegar permisos.
+            // El primer parámetro es un array con los permisos solicitados.
+            // El segundo parámetro es un código de solicitud (requestCode) para identificar la respuesta.
+            requestPermissions(
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+
+            // return:
+            // Sale del método para esperar la respuesta del usuario.
+            return
+        }
+
+        // map.isMyLocationEnabled:
+        // Propiedad del objeto GoogleMap que activa la capa de ubicación.
+        // Cuando está en true, el mapa muestra un punto azul indicando la posición del usuario.
+        map.isMyLocationEnabled = true
+    }
+
+    /**
+     * Método callback que se ejecuta automáticamente cuando el usuario responde
+     * a una solicitud de permisos mostrada previamente con requestPermissions().
+     *
+     *
+     * Funcionamiento:
+     * 1. Comprueba que el requestCode coincide con el permiso de ubicación.
+     * 2. Comprueba que el usuario ha respondido y que el permiso ha sido concedido.
+     * 3. Si el permiso está concedido, activa la capa de ubicación del mapa.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        // Llama al comportamiento por defecto del método en la clase padre.
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        // Comprueba:
+        // - Que el código de solicitud es el esperado (1).
+        // - Que el array de resultados no está vacío.
+        // - Que el primer resultado indica que el permiso fue concedido.
+        if (requestCode == 1 && grantResults.isNotEmpty()
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            // Activa la capa de ubicación del mapa.
+            // Esto muestra el punto azul con la posición del usuario.
+            map.isMyLocationEnabled = true
+        }
+    }
+
 
 
 }
