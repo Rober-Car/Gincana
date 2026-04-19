@@ -25,23 +25,43 @@ import com.google.android.gms.location.FusedLocationProviderClient
 
 
 
+/**
+ * MainActivity
+ * ------------
+ * QUÉ ES:
+ * - Actividad principal de la aplicación.
+ * - Pantalla que contiene el mapa de Google Maps y toda la lógica de interacción.
+ *
+ * QUÉ HACE:
+ * - Inicializa el mapa.
+ * - Carga iconos personalizados.
+ * - Añade marcadores interactivos.
+ * - Gestiona permisos de ubicación.
+ * - Muestra diálogos de retos.
+ * - Centra la cámara en puntos específicos.
+ *
+ * POR QUÉ EXISTE:
+ * - Es el núcleo de la aplicación, donde se coordina toda la lógica visual y funcional.
+ *
+ * CONTEXTO TÉCNICO:
+ * - Extiende AppCompatActivity → permite usar componentes modernos de Android.
+ * - Implementa OnMapReadyCallback → obliga a implementar onMapReady(), donde se configura el mapa.
+ */
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /**
      * binding
      * -------
      * QUÉ ES:
-     * - Instancia generada automáticamente por ViewBinding a partir del layout activity_main.xml.
-     *
-     * POR QUÉ EXISTE:
-     * - Sustituye a findViewById(), evitando errores de tipo y referencias nulas.
-     * - Garantiza acceso seguro y directo a todas las vistas del layout.
+     * - Objeto generado automáticamente por ViewBinding a partir del layout activity_main.xml.
+     * - Contiene referencias tipadas a todas las vistas del layout.
      *
      * QUÉ HACE:
-     * - Permite acceder a elementos como switchLocation, el contenedor del mapa, etc.
+     * - Permite acceder a las vistas sin usar findViewById().
+     * - Evita errores de tipo y NullPointerException.
      *
-     * BENEFICIOS:
-     * - Más rápido, más seguro y más limpio que usar IDs manuales.
+     * POR QUÉ EXISTE:
+     * - ViewBinding es el sistema moderno recomendado por Google para manejar vistas.
      */
     private lateinit var binding: ActivityMainBinding
 
@@ -50,123 +70,92 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * map
      * ---
      * QUÉ ES:
-     * - Objeto principal del SDK de Google Maps que representa el mapa real mostrado en pantalla.
-     *
-     * POR QUÉ EXISTE:
-     * - Google Maps no está disponible inmediatamente al iniciar la actividad.
-     * - Solo se obtiene cuando el mapa termina de cargarse (onMapReady).
+     * - Objeto principal del SDK de Google Maps.
+     * - Representa el mapa real mostrado en pantalla.
      *
      * QUÉ HACE:
-     * - Permite añadir marcadores.
-     * - Permite mover la cámara.
-     * - Permite activar la ubicación del usuario.
-     * - Permite registrar listeners de interacción (clicks, gestos, etc.).
+     * - Añade marcadores.
+     * - Mueve la cámara.
+     * - Activa la ubicación del usuario.
+     * - Aplica estilos visuales.
+     * - Registra listeners de interacción.
+     *
+     * POR QUÉ EXISTE:
+     * - Google Maps se carga de forma asíncrona y debe almacenarse aquí para usarlo después.
      *
      * RIESGOS:
      * - Si se usa antes de onMapReady(), la app se cierra.
      */
     private lateinit var map: GoogleMap
 
+
+    /**
+     * fusedLocationClient
+     * -------------------
+     * QUÉ ES:
+     * - Proveedor de ubicación de Google Play Services.
+     * - Sistema moderno recomendado para obtener la ubicación del dispositivo.
+     *
+     * QUÉ HACE:
+     * - Obtiene la última ubicación conocida.
+     * - Puede solicitar actualizaciones de ubicación.
+     *
+     * POR QUÉ EXISTE:
+     * - Es más eficiente que usar directamente el GPS.
+     * - Combina GPS, WiFi, Bluetooth y redes móviles para obtener la mejor ubicación posible.
+     *
+     * RIESGOS:
+     * - Puede devolver null si no hay ubicación reciente.
+     */
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
 
     /**
      * onCreate()
      * ----------
      * QUÉ ES:
-     * - Primer método que se ejecuta al crear la actividad.
+     * - Método del ciclo de vida de Android que se ejecuta al crear la actividad.
      *
      * QUÉ HACE:
      * - Infla el layout con ViewBinding.
-     * - Establece el contenido de la pantalla.
      * - Obtiene el fragmento del mapa.
-     * - Inicia la carga asíncrona del mapa.
-     * - Configura el Switch que activa/desactiva la ubicación del usuario.
+     * - Inicia la carga del mapa.
+     * - Configura el Switch de ubicación.
+     * - Inicializa el proveedor de ubicación.
      *
-     * POR QUÉ ES IMPORTANTE:
+     * POR QUÉ EXISTE:
      * - Es el punto de entrada de toda la lógica de la actividad.
-     * - Prepara todo lo necesario antes de que el usuario interactúe.
+     * - Prepara todos los componentes antes de que el usuario interactúe.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /** Infla el layout y crea el objeto binding. */
         binding = ActivityMainBinding.inflate(layoutInflater)
-
-        /** Establece el layout como contenido visible de la actividad. */
         setContentView(binding.root)
 
-        /**
-         * mapFragment
-         * -----------
-         * QUÉ ES:
-         * - Fragmento especial que contiene el mapa de Google.
-         *
-         * QUÉ HACE:
-         * - Gestiona la creación del mapa.
-         * - Permite solicitar el mapa mediante getMapAsync().
-         *
-         * POR QUÉ ES NECESARIO:
-         * - Google Maps funciona dentro de un fragmento, no directamente en la actividad.
-         */
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
 
-        /**
-         * getMapAsync(this)
-         * -----------------
-         * QUÉ ES:
-         * - Llamada que indica al fragmento que debe cargar el mapa.
-         *
-         * QUÉ HACE:
-         * - Cuando el mapa está listo, invoca onMapReady(googleMap).
-         *
-         * POR QUÉ ES ASÍ:
-         * - La carga del mapa es asíncrona y puede tardar varios segundos.
-         */
         mapFragment.getMapAsync(this)
 
 
-        /**
-         * switchLocation.setOnCheckedChangeListener
-         * -----------------------------------------
-         * QUÉ ES:
-         * - Listener que detecta cuando el usuario activa o desactiva el Switch.
-         *
-         * QUÉ HACE:
-         * - Si se activa → intenta habilitar la ubicación del usuario.
-         * - Si se desactiva → intenta deshabilitar la capa de ubicación.
-         *
-         * POR QUÉ ES NECESARIO:
-         * - La ubicación requiere permisos y puede fallar.
-         * - El usuario debe poder activar/desactivar la función manualmente.
-         */
         binding.switchLocation.setOnCheckedChangeListener { _, isChecked ->
-
             if (isChecked) {
                 activarUbicacion()
-
             } else {
-                @SuppressLint("MissingPermission")
-                try {
-                    /**
-                     * map.isMyLocationEnabled = false
-                     * -------------------------------
-                     * QUÉ HACE:
-                     * - Desactiva el punto azul de "mi ubicación".
-                     *
-                     * POR QUÉ ESTÁ EN TRY:
-                     * - Si no hay permisos, podría lanzar SecurityException.
-                     */
+                if (::map.isInitialized &&
+                    checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
                     map.isMyLocationEnabled = false
-                } catch (_: SecurityException) {
-                    // Permiso no concedido, se ignora para evitar cierre de la app.
                 }
             }
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
+
 
 
     /**
@@ -177,69 +166,74 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      *
      * QUÉ HACE:
      * - Guarda la referencia al mapa.
-     * - Aplica un estilo visual personalizado.
-     * - Define las coordenadas de las ciudades.
-     * - Añade marcadores con título y descripción.
-     * - Centra la cámara en Andalucía.
-     * - Configura el listener de pulsación sobre marcadores.
+     * - Carga iconos personalizados.
+     * - Aplica un estilo visual.
+     * - Añade marcadores.
+     * - Centra la cámara.
+     * - Configura listeners de interacción.
      *
-     * POR QUÉ ES IMPORTANTE:
+     * POR QUÉ EXISTE:
      * - Es el único lugar donde el mapa está garantizado como listo para usarse.
      */
     override fun onMapReady(googleMap: GoogleMap) {
 
-        /** Guarda el mapa para poder usarlo en toda la actividad. */
         map = googleMap
 
+        /**
+         * Iconos personalizados
+         * ---------------------
+         * QUÉ ES:
+         * - Conversión de imágenes PNG a Bitmaps escalados.
+         *
+         * QUÉ HACE:
+         * - Crea iconos personalizados para los marcadores.
+         *
+         * POR QUÉ EXISTE:
+         * - Mejora la estética del mapa.
+         */
         val original = BitmapFactory.decodeResource(resources, R.drawable.astro_icon1)
-        val pequeño = Bitmap.createScaledBitmap(original, 120, 120, false)
-        val icono = BitmapDescriptorFactory.fromBitmap(pequeño)
+        val icono = BitmapDescriptorFactory.fromBitmap(
+            Bitmap.createScaledBitmap(original, 120, 120, false)
+        )
 
         val original2 = BitmapFactory.decodeResource(resources, R.drawable.astro_icon2)
-        val pequeño2 = Bitmap.createScaledBitmap(original2, 120, 120, false)
-        val icono2 = BitmapDescriptorFactory.fromBitmap(pequeño2)
-
+        val icono2 = BitmapDescriptorFactory.fromBitmap(
+            Bitmap.createScaledBitmap(original2, 120, 120, false)
+        )
 
         val original3 = BitmapFactory.decodeResource(resources, R.drawable.astro_icon3)
-        val pequeño3 = Bitmap.createScaledBitmap(original3, 120, 120, false)
-        val icono3 = BitmapDescriptorFactory.fromBitmap(pequeño3)
+        val icono3 = BitmapDescriptorFactory.fromBitmap(
+            Bitmap.createScaledBitmap(original3, 120, 120, false)
+        )
 
 
         /**
          * Estilo del mapa
          * ---------------
          * QUÉ ES:
-         * - Un archivo JSON en /res/raw/map_style.json que define colores y apariencia del mapa.
+         * - Archivo JSON que define colores y apariencia del mapa.
          *
          * QUÉ HACE:
          * - Cambia colores de carreteras, agua, texto, terreno, etc.
-         *
-         * POR QUÉ ES ÚTIL:
-         * - Permite personalizar el mapa para que combine con la estética de la app.
          */
         try {
             val success = map.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    this, R.raw.map_style
-                )
+                MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style)
             )
-
-            if (!success) {
-                println("Error aplicando estilo")
-            }
-
+            if (!success) println("Error aplicando estilo")
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
 
         /**
-         * Coordenadas de todas las ciudades.
+         * Coordenadas de ciudades
+         * -----------------------
          * QUÉ ES:
-         * - Cada LatLng representa una posición geográfica (latitud, longitud).
+         * - Conjunto de objetos LatLng que representan posiciones geográficas.
          *
-         * POR QUÉ SE DEFINE AQUÍ:
-         * - onMapReady es el momento en el que el mapa está listo para recibir marcadores.
+         * QUÉ HACE:
+         * - Define los puntos donde se colocarán los marcadores.
          */
         val sevilla = LatLng(37.3891, -5.9845)
         val granada = LatLng(37.1773, -3.5986)
@@ -254,24 +248,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         /**
-         * Marcadores
-         * ----------
-         * QUÉ SON:
-         * - Iconos interactivos colocados en el mapa.
+         * Marcadores de la gincana
+         * ------------------------
+         * QUÉ ES:
+         * - Conjunto de puntos interactivos colocados en el mapa.
          *
-         * QUÉ HACEN:
+         * QUÉ HACE:
          * - Muestran un título y una descripción.
          * - Permiten abrir un diálogo al pulsarlos.
-         *
-         * POR QUÉ SE USAN:
-         * - Representan puntos de misión de la gincana.
          */
         map.addMarker(
             MarkerOptions()
                 .position(bonares)
                 .title("Bonares – Inicio")
                 .snippet("Empieza la misión. Busca el punto de energía escondido en el pueblo y actívalo.")
-                 .icon(icono)
+                .icon(icono)
         )
 
         map.addMarker(
@@ -287,6 +278,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 .position(granada)
                 .title("Granada – Alhambra")
                 .snippet("Entra en la zona y recupera el chip que han escondido los enemigos.")
+                .icon(icono)
         )
 
         map.addMarker(
@@ -350,42 +342,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
          * andalucia
          * ---------
          * QUÉ ES:
-         * - Coordenada aproximada del centro de Andalucía.
+         * - Coordenada central aproximada de Andalucía.
          *
          * QUÉ HACE:
          * - Se usa como punto objetivo para centrar la cámara.
          */
         val andalucia = LatLng(37.5, -4.5)
 
-        /**
-         * animateCamera()
-         * ---------------
-         * QUÉ HACE:
-         * - Mueve la cámara con animación hacia la posición indicada.
-         *
-         * POR QUÉ SE USA:
-         * - Da una sensación más suave y profesional al usuario.
-         */
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(andalucia, 7f))
 
 
         /**
-         * setOnMarkerClickListener
-         * ------------------------
+         * Listener de clic en marcadores
+         * ------------------------------
          * QUÉ ES:
-         * - Listener que se ejecuta cuando el usuario pulsa un marcador.
+         * - Callback que detecta cuando el usuario pulsa un marcador.
          *
          * QUÉ HACE:
-         * - Llama a mostrarDialogo() con la información del marcador.
-         * - Devuelve true para indicar que gestionamos el evento manualmente.
+         * - Abre un diálogo con el reto correspondiente.
          */
         map.setOnMarkerClickListener { marker ->
-
             mostrarDialogo(marker.title, marker.snippet)
-
             true
         }
     }
+
 
 
     /**
@@ -399,6 +380,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * - Añade un campo de texto para introducir una contraseña.
      * - Valida la contraseña "astro".
      * - Muestra mensajes de éxito o error.
+     *
+     * POR QUÉ EXISTE:
+     * - Cada marcador representa un reto que debe validarse.
      */
     private fun mostrarDialogo(titulo: String?, descripcion: String?) {
 
@@ -439,16 +423,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+
     /**
      * activarUbicacion()
      * ------------------
      * QUÉ ES:
-     * - Método que gestiona permisos y activa la ubicación del usuario.
+     * - Método encargado de gestionar permisos y activar la capa de ubicación del mapa.
      *
      * QUÉ HACE:
-     * - Comprueba si el permiso está concedido.
-     * - Si no lo está, lo solicita.
-     * - Si lo está, activa la capa de ubicación del mapa.
+     * - Comprueba permisos.
+     * - Activa la ubicación.
+     * - Obtiene la última ubicación conocida.
+     * - Mueve la cámara hacia la posición real del usuario.
+     *
+     * POR QUÉ EXISTE:
+     * - Google Maps no puede mostrar la ubicación sin permisos explícitos.
+     * - Centraliza toda la lógica de activación de ubicación.
      */
     @SuppressLint("MissingPermission")
     private fun activarUbicacion() {
@@ -474,9 +464,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 map.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(miUbicacion, 15f)
                 )
+
+            } else {
+                Toast.makeText(this, "Buscando ubicación...", Toast.LENGTH_SHORT).show()
+
+                val andalucia = LatLng(37.5, -4.5)
+                map.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(andalucia, 10f)
+                )
             }
         }
     }
+
 
 
     /**
@@ -487,38 +486,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      *
      * QUÉ HACE:
      * - Si el permiso fue concedido, activa la ubicación del mapa.
+     * - Si fue denegado, desactiva el Switch y muestra un mensaje.
+     *
+     * POR QUÉ EXISTE:
+     * - Android obliga a gestionar permisos en tiempo de ejecución.
      */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 1 &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            @SuppressLint("MissingPermission")
-            try {
-                map.isMyLocationEnabled = true
-
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-
-                        val miUbicacion = LatLng(location.latitude, location.longitude)
-
-                        map.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(miUbicacion, 15f)
-                        )
-                    }
-                }
-
-            } catch (_: SecurityException) {}
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            activarUbicacion()
+        } else {
+            Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+            binding.switchLocation.isChecked = false
         }
     }
-
-
 }
-
