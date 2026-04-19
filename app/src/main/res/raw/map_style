@@ -1,0 +1,9 @@
+[
+  {
+  "_comentario": "Este bloque oculta los puntos de interés para que no distraigan",
+    "featureType": "poi",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  }
+]

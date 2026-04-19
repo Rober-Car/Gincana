@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="astro_cyan">#00F5FF</color>
+    <color name="astro_cyan_dark">#1A1A1A</color>
+    <color name="astro_text">#3F51B5</color>
+
 </resources>

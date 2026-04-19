@@ -3,18 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mi ubicación"
-        android:layout_margin="16dp"
-        android:layout_gravity="top|end"/>
+        android:text="@string/mi_ubicacion"
+        android:textColor="@color/astro_text"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:thumbTint="@color/astro_cyan"
+        android:trackTint="@color/astro_cyan_dark"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="40dp"/>
 
 </FrameLayout>
