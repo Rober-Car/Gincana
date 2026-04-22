@@ -1,6 +1,44 @@
 [
   {
-  "_comentario": "Este bloque oculta los puntos de interés para que no distraigan",
+    "elementType": "geometry",
+    "stylers": [
+      { "color": "#1e3a5f" }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      { "color": "#a6e3ff" }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      { "color": "#10243a" }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      { "color": "#16324f" }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      { "color": "#00cfff" }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      { "color": "#0099cc" }
+    ]
+  },
+  {
     "featureType": "poi",
     "stylers": [
       { "visibility": "off" }

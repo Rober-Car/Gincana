@@ -179,51 +179,180 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         map = googleMap
 
+
         /**
-         * Iconos personalizados
-         * ---------------------
+         * ICONOS PERSONALIZADOS PARA LOS MARCADORES
+         * -----------------------------------------
          * QUÉ ES:
-         * - Conversión de imágenes PNG a Bitmaps escalados.
-         *
-         * QUÉ HACE:
-         * - Crea iconos personalizados para los marcadores.
+         * - Bloque encargado de cargar imágenes desde /res/drawable/,
+         *   convertirlas en Bitmaps y luego transformarlas en BitmapDescriptor,
+         *   que es el formato que Google Maps necesita para mostrar iconos personalizados.
          *
          * POR QUÉ EXISTE:
-         * - Mejora la estética del mapa.
+         * - Los marcadores por defecto de Google Maps son simples y poco visuales.
+         * - Con iconos personalizados puedes representar misiones, personajes o estados.
+         *
+         * CÓMO FUNCIONA:
+         * - decodeResource() → carga la imagen desde drawable.
+         * - createScaledBitmap() → redimensiona la imagen al tamaño deseado.
+         * - fromBitmap() → convierte el Bitmap en un BitmapDescriptor compatible con Google Maps.
+         */
+
+//
+// 1) PRIMER ICONO
+//
+
+        /**
+         * BitmapFactory.decodeResource(...)
+         * ---------------------------------
+         * QUÉ ES:
+         * - Método estático de la clase BitmapFactory.
+         *
+         * QUÉ HACE:
+         * - Carga un recurso de imagen (PNG, JPG) desde /res/drawable/ y lo convierte en un Bitmap.
+         *
+         * PARÁMETROS:
+         * - resources → acceso a los recursos de la app.
+         * - R.drawable.astro_icon1 → ID del archivo de imagen.
+         *
+         * POR QUÉ EXISTE:
+         * - Google Maps NO puede usar directamente drawables; necesita Bitmaps.
          */
         val original = BitmapFactory.decodeResource(resources, R.drawable.astro_icon1)
+
+        /**
+         * Bitmap.createScaledBitmap(...)
+         * ------------------------------
+         * QUÉ ES:
+         * - Método que crea una copia del Bitmap original pero con un tamaño diferente.
+         *
+         * QUÉ HACE:
+         * - Redimensiona la imagen a 120x120 píxeles.
+         *
+         * PARÁMETROS:
+         * - original → el Bitmap cargado desde drawable.
+         * - 120, 120 → ancho y alto deseados.
+         * - false → indica que NO se aplique filtrado de suavizado.
+         *
+         * POR QUÉ EXISTE:
+         * - Los iconos demasiado grandes se ven mal en el mapa.
+         */
         val icono = BitmapDescriptorFactory.fromBitmap(
             Bitmap.createScaledBitmap(original, 120, 120, false)
         )
 
+
+        //
+        // 2) SEGUNDO ICONO
+        //
+
         val original2 = BitmapFactory.decodeResource(resources, R.drawable.astro_icon2)
+
         val icono2 = BitmapDescriptorFactory.fromBitmap(
             Bitmap.createScaledBitmap(original2, 120, 120, false)
         )
 
+
+        //
+        // 3) TERCER ICONO
+        //
+
         val original3 = BitmapFactory.decodeResource(resources, R.drawable.astro_icon3)
+
         val icono3 = BitmapDescriptorFactory.fromBitmap(
             Bitmap.createScaledBitmap(original3, 120, 120, false)
         )
+
 
 
         /**
          * Estilo del mapa
          * ---------------
          * QUÉ ES:
-         * - Archivo JSON que define colores y apariencia del mapa.
+         * - Bloque encargado de cargar y aplicar un estilo visual personalizado al mapa.
          *
          * QUÉ HACE:
-         * - Cambia colores de carreteras, agua, texto, terreno, etc.
+         * - Lee un archivo JSON desde res/raw/map_style.json.
+         * - Convierte el JSON en un objeto MapStyleOptions.
+         * - Aplica el estilo al mapa mediante setMapStyle().
+         * - Comprueba si el estilo se aplicó correctamente.
+         * - Captura excepciones para evitar que la app se cierre si el JSON es inválido.
          */
         try {
+
+            /**
+             * map.setMapStyle(...)
+             * ---------------------
+             * QUÉ ES:
+             * - Método de la clase GoogleMap.
+             *
+             * QUÉ HACE:
+             * - Aplica un estilo visual al mapa usando un objeto MapStyleOptions.
+             *
+             * QUÉ DEVUELVE:
+             * - Boolean:
+             *      true  → el estilo se aplicó correctamente.
+             *      false → el archivo JSON se cargó pero contiene errores de formato.
+             */
             val success = map.setMapStyle(
+
+                /**
+                 * MapStyleOptions.loadRawResourceStyle(...)
+                 * -----------------------------------------
+                 * QUÉ ES:
+                 * - Método estático de la clase MapStyleOptions.
+                 *
+                 * QUÉ HACE:
+                 * - Carga un archivo JSON desde la carpeta res/raw/.
+                 * - Convierte ese JSON en un objeto MapStyleOptions que Google Maps puede interpretar.
+                 *
+                 * PARÁMETROS:
+                 * - this → Contexto de la Activity, necesario para acceder a recursos.
+                 * - R.raw.map_style → ID del archivo JSON que contiene el estilo.
+                 *
+                 * POR QUÉ EXISTE:
+                 * - Google Maps NO puede leer JSON directamente; necesita convertirlo a un objeto.
+                 */
                 MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style)
             )
+
+            /**
+             * if (!success)
+             * --------------
+             * QUÉ ES:
+             * - Comprobación del resultado devuelto por setMapStyle().
+             *
+             * QUÉ HACE:
+             * - Si el estilo no se aplicó correctamente, imprime un mensaje en consola.
+             *
+             * POR QUÉ EXISTE:
+             * - Para depurar errores sin romper la aplicación.
+             */
             if (!success) println("Error aplicando estilo")
+
         } catch (e: Exception) {
+
+            /**
+             * catch (e: Exception)
+             * --------------------
+             * QUÉ ES:
+             * - Bloque que captura cualquier excepción lanzada dentro del try.
+             *
+             * QUÉ HACE:
+             * - Evita que la aplicación se cierre si ocurre un error.
+             * - Imprime la traza completa del error para depuración.
+             *
+             * POR QUÉ EXISTE:
+             * - Los errores más comunes:
+             *      * El archivo JSON no existe.
+             *      * El JSON está mal formado.
+             *      * El archivo está vacío.
+             *      * El archivo contiene claves no válidas.
+             *      * Error interno del motor de estilos de Google Maps.
+             */
             e.printStackTrace()
         }
+
 
 
         /**
