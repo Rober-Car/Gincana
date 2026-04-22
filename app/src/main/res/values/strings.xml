@@ -1,4 +1,34 @@
 <resources>
     <string name="app_name">Gincana</string>
     <string name="mi_ubicacion">UBICACION</string>
+    <string name="title_bonares">Bonares – Inicio</string>
+    <string name="title_sevilla">Sevilla – Giralda</string>
+    <string name="title_granada">Granada – Alhambra</string>
+    <string name="title_huelva">Huelva – Puerto</string>
+    <string name="title_cadiz">Cádiz – Playa</string>
+    <string name="title_malaga">Málaga – Energía</string>
+    <string name="title_cordoba">Córdoba – Laberinto</string>
+    <string name="title_almeria">Almería – Desierto</string>
+    <string name="title_jaen">Jaén – Olivos</string>
+    <string name="title_ronda">Ronda – Puente</string>
+
+    <string name="snippet_bonares">Empieza la misión. Busca el punto de energía escondido en el pueblo y actívalo.</string>
+    <string name="snippet_sevilla">Sube hasta la torre y encuentra el robot perdido antes de que se apague.</string>
+    <string name="snippet_granada">Entra en la zona y recupera el chip que han escondido los enemigos.</string>
+    <string name="snippet_huelva">La nave está rota. Busca las piezas por el puerto y arréglala.</string>
+    <string name="snippet_cadiz">Ten cuidado con los robots del agua y elimina los que bloquean el camino.</string>
+    <string name="snippet_malaga">Recoge los cristales que hay por la zona para recargar a Astro.</string>
+    <string name="snippet_cordoba">Muévete por el laberinto sin caer en las trampas y encuentra la salida.</string>
+    <string name="snippet_almeria">Aguanta la tormenta de arena y protege el sistema de Astro.</string>
+    <string name="snippet_jaen">Busca la mina escondida entre los olivos y desactívala.</string>
+    <string name="snippet_ronda">Cruza el puente sin que te detecten y activa el último punto.</string>
+
+    <string name="dialog_hint_password">Introduce contraseña</string>
+    <string name="dialog_button_finish">Finalizar</string>
+    <string name="dialog_button_cancel">Cancelar</string>
+
+    <string name="toast_mission_completed">Prueba completada</string>
+    <string name="toast_wrong_password">Contraseña incorrecta</string>
+
+    <string name="password_correct">astro</string>
 </resources>

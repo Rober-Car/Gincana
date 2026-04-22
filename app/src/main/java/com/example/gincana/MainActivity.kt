@@ -257,86 +257,75 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
          * - Muestran un título y una descripción.
          * - Permiten abrir un diálogo al pulsarlos.
          */
-        map.addMarker(
-            MarkerOptions()
-                .position(bonares)
-                .title("Bonares – Inicio")
-                .snippet("Empieza la misión. Busca el punto de energía escondido en el pueblo y actívalo.")
-                .icon(icono)
-        )
+        // Bonares
+        map.addMarker(MarkerOptions()
+            .position(bonares)
+            .title(getString(R.string.title_bonares))
+            .snippet(getString(R.string.snippet_bonares))
+            .icon(icono))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(sevilla)
-                .title("Sevilla – Giralda")
-                .snippet("Sube hasta la torre y encuentra el robot perdido antes de que se apague.")
-                .icon(icono2)
-        )
+// Sevilla
+        map.addMarker(MarkerOptions()
+            .position(sevilla)
+            .title(getString(R.string.title_sevilla))
+            .snippet(getString(R.string.snippet_sevilla))
+            .icon(icono2))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(granada)
-                .title("Granada – Alhambra")
-                .snippet("Entra en la zona y recupera el chip que han escondido los enemigos.")
-                .icon(icono)
-        )
+// Granada
+        map.addMarker(MarkerOptions()
+            .position(granada)
+            .title(getString(R.string.title_granada))
+            .snippet(getString(R.string.snippet_granada))
+            .icon(icono))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(huelva)
-                .title("Huelva – Puerto")
-                .snippet("La nave está rota. Busca las piezas por el puerto y arréglala.")
-                .icon(icono3)
-        )
+// Huelva
+        map.addMarker(MarkerOptions()
+            .position(huelva)
+            .title(getString(R.string.title_huelva))
+            .snippet(getString(R.string.snippet_huelva))
+            .icon(icono3))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(cadiz)
-                .title("Cádiz – Playa")
-                .snippet("Ten cuidado con los robots del agua y elimina los que bloquean el camino.")
-                .icon(icono)
-        )
+// Cádiz
+        map.addMarker(MarkerOptions()
+            .position(cadiz)
+            .title(getString(R.string.title_cadiz))
+            .snippet(getString(R.string.snippet_cadiz))
+            .icon(icono))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(malaga)
-                .title("Málaga – Energía")
-                .snippet("Recoge los cristales que hay por la zona para recargar a Astro.")
-                .icon(icono2)
-        )
+// Málaga
+        map.addMarker(MarkerOptions()
+            .position(malaga)
+            .title(getString(R.string.title_malaga))
+            .snippet(getString(R.string.snippet_malaga))
+            .icon(icono2))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(cordoba)
-                .title("Córdoba – Laberinto")
-                .snippet("Muévete por el laberinto sin caer en las trampas y encuentra la salida.")
-                .icon(icono3)
-        )
+// Córdoba
+        map.addMarker(MarkerOptions()
+            .position(cordoba)
+            .title(getString(R.string.title_cordoba))
+            .snippet(getString(R.string.snippet_cordoba))
+            .icon(icono3))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(almeria)
-                .title("Almería – Desierto")
-                .snippet("Aguanta la tormenta de arena y protege el sistema de Astro.")
-                .icon(icono)
-        )
+// Almería
+        map.addMarker(MarkerOptions()
+            .position(almeria)
+            .title(getString(R.string.title_almeria))
+            .snippet(getString(R.string.snippet_almeria))
+            .icon(icono))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(jaen)
-                .title("Jaén – Olivos")
-                .snippet("Busca la mina escondida entre los olivos y desactívala.")
-                .icon(icono3)
-        )
+// Jaén
+        map.addMarker(MarkerOptions()
+            .position(jaen)
+            .title(getString(R.string.title_jaen))
+            .snippet(getString(R.string.snippet_jaen))
+            .icon(icono3))
 
-        map.addMarker(
-            MarkerOptions()
-                .position(ronda)
-                .title("Ronda – Puente")
-                .snippet("Cruza el puente sin que te detecten y activa el último punto.")
-                .icon(icono2)
-        )
-
+// Ronda
+        map.addMarker(MarkerOptions()
+            .position(ronda)
+            .title(getString(R.string.title_ronda))
+            .snippet(getString(R.string.snippet_ronda))
+            .icon(icono2))
 
         /**
          * andalucia
@@ -352,72 +341,217 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(andalucia, 7f))
 
 
-        /**
-         * Listener de clic en marcadores
-         * ------------------------------
-         * QUÉ ES:
-         * - Callback que detecta cuando el usuario pulsa un marcador.
-         *
-         * QUÉ HACE:
-         * - Abre un diálogo con el reto correspondiente.
-         */
+
         map.setOnMarkerClickListener { marker ->
             mostrarDialogo(marker.title, marker.snippet)
             true
         }
     }
-
-
-
     /**
      * mostrarDialogo()
      * ----------------
      * QUÉ ES:
-     * - Método que construye y muestra un AlertDialog personalizado.
+     * - Método responsable de construir, configurar y mostrar un AlertDialog personalizado.
+     * - Es un componente de UI que aparece como una ventana emergente sobre la Activity.
      *
      * QUÉ HACE:
-     * - Muestra título y descripción del reto.
-     * - Añade un campo de texto para introducir una contraseña.
-     * - Valida la contraseña "astro".
-     * - Muestra mensajes de éxito o error.
+     * - Muestra un título y una descripción del reto.
+     * - Inserta un campo de texto (EditText) para que el usuario introduzca una contraseña.
+     * - Controla manualmente el botón "Finalizar" para que solo se active si hay texto.
+     * - Valida la contraseña comparándola con un recurso de strings.
+     * - Muestra mensajes de éxito o error mediante Toast.
+     * - Cierra o mantiene abierto el diálogo según la validación.
      *
      * POR QUÉ EXISTE:
-     * - Cada marcador representa un reto que debe validarse.
+     * - Cada marcador del mapa representa una misión.
+     * - Esta función permite que el usuario complete la misión introduciendo la contraseña correcta.
+     *
+     * DETALLES TÉCNICOS:
+     * - Usa AlertDialog.Builder para construir el diálogo antes de crearlo.
+     * - Usa setView() para incrustar un EditText dentro del diálogo.
+     * - Usa listeners manuales para controlar cuándo se cierra el diálogo.
+     * - Usa recursos de strings para permitir traducción y mantenimiento limpio.
+     *
+     * @param titulo Texto que aparecerá como cabecera del diálogo.
+     * @param descripcion Texto que aparecerá como cuerpo del diálogo.
      */
     private fun mostrarDialogo(titulo: String?, descripcion: String?) {
 
+        // 1. EL CONSTRUCTOR DEL DIÁLOGO (AlertDialog.Builder)
+        // ---------------------------------------------------
+        // QUÉ ES:
+        // - Un objeto que permite configurar paso a paso un diálogo antes de crearlo.
+        //
+        // QUÉ HACE:
+        // - Recibe un Context (this = la Activity actual).
+        // - Permite definir título, mensaje, botones y vistas personalizadas.
+        //
+        // POR QUÉ EXISTE:
+        // - Android separa la fase de "configuración" de la fase de "creación".
         val builder = AlertDialog.Builder(this)
 
+
+
+        // 2. CONFIGURACIÓN DEL TEXTO DEL DIÁLOGO
+        // --------------------------------------
+        // QUÉ ES:
+        // - Asignación del título y mensaje que se mostrarán en la ventana.
+        //
+        // QUÉ HACE:
+        // - Usa los parámetros recibidos para personalizar el diálogo según el marcador pulsado.
         builder.setTitle(titulo)
         builder.setMessage(descripcion)
 
-        val input = EditText(this)
-        input.hint = "Introduce contraseña"
 
+
+        // 3. CREACIÓN DEL CAMPO DE TEXTO (EditText)
+        // -----------------------------------------
+        // QUÉ ES:
+        // - Un componente de entrada donde el usuario puede escribir texto.
+        //
+        // QUÉ HACE:
+        // - Permite introducir la contraseña necesaria para completar la misión.
+        //
+        // POR QUÉ EXISTE:
+        // - Los diálogos por defecto NO incluyen campos de texto; hay que crearlos manualmente.
+        val input = EditText(this)
+
+
+
+        // 4. ASIGNACIÓN DEL HINT (texto gris dentro del EditText)
+        // --------------------------------------------------------
+        // QUÉ ES:
+        // - Un texto guía que aparece dentro del EditText cuando está vacío.
+        //
+        // QUÉ HACE:
+        // - Indica al usuario qué debe escribir.
+        //
+        // POR QUÉ EXISTE:
+        // - Mejora la usabilidad y claridad del diálogo.
+        input.hint = getString(R.string.dialog_hint_password)
+
+
+
+        // 5. INSERTAR EL EDITTEXT EN EL DIÁLOGO
+        // -------------------------------------
+        // QUÉ ES:
+        // - setView() permite incrustar una vista personalizada dentro del diálogo.
+        //
+        // QUÉ HACE:
+        // - Coloca el EditText dentro del cuerpo del diálogo.
+        //
+        // POR QUÉ EXISTE:
+        // - Los diálogos estándar solo muestran texto; esta función permite personalizarlos.
         builder.setView(input)
 
-        builder.setPositiveButton("Finalizar", null)
-        builder.setNegativeButton("Cancelar", null)
 
+
+        // 6. CONFIGURACIÓN DE BOTONES
+        // ---------------------------
+        // QUÉ ES:
+        // - Definición de los botones "Finalizar" y "Cancelar".
+        //
+        // QUÉ HACE:
+        // - Asigna el texto de los botones usando recursos de strings.
+        // - El listener se deja en null porque queremos controlarlo manualmente después.
+        //
+        // POR QUÉ EXISTE:
+        // - Si pusiéramos un listener aquí, el diálogo se cerraría automáticamente.
+        builder.setPositiveButton(getString(R.string.dialog_button_finish), null)
+        builder.setNegativeButton(getString(R.string.dialog_button_cancel), null)
+
+
+
+        // 7. CREAR Y MOSTRAR EL DIÁLOGO
+        // ------------------------------
+        // QUÉ ES:
+        // - create() construye el diálogo con toda la configuración previa.
+        // - show() lo dibuja en pantalla.
+        //
+        // POR QUÉ EXISTE:
+        // - Hasta que no se llama a show(), el diálogo no existe visualmente.
         val dialog = builder.create()
         dialog.show()
 
+
+
+        // 8. OBTENER REFERENCIA AL BOTÓN POSITIVO
+        // ---------------------------------------
+        // QUÉ ES:
+        // - getButton() permite acceder al botón físico del diálogo.
+        //
+        // QUÉ HACE:
+        // - Permite modificar su estado (habilitado/deshabilitado).
+        //
+        // POR QUÉ EXISTE:
+        // - Necesitamos controlar cuándo el usuario puede pulsarlo.
         val boton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+
+
+        // 9. DESACTIVAR EL BOTÓN AL INICIO
+        // --------------------------------
+        // QUÉ ES:
+        // - isEnabled controla si el botón está activo.
+        //
+        // QUÉ HACE:
+        // - Evita que el usuario pulse "Finalizar" sin escribir nada.
         boton.isEnabled = false
 
+
+
+        // 10. ESCUCHADOR DEL TEXTO DEL EDITTEXT
+        // -------------------------------------
+        // QUÉ ES:
+        // - addTextChangedListener escucha cada cambio en el texto del EditText.
+        //
+        // QUÉ HACE:
+        // - Activa el botón solo si hay texto.
+        //
+        // POR QUÉ EXISTE:
+        // - Evita validaciones vacías.
         input.addTextChangedListener {
             boton.isEnabled = it?.isNotEmpty() == true
         }
 
+
+
+        // 11. ESCUCHADOR DEL BOTÓN "FINALIZAR"
+        // ------------------------------------
+        // QUÉ ES:
+        // - Listener que se ejecuta cuando el usuario toca el botón.
+        //
+        // QUÉ HACE:
+        // - Obtiene el texto del EditText.
+        // - Lo compara con la contraseña correcta.
+        // - Muestra un Toast de éxito o error.
+        // - Cierra el diálogo solo si la contraseña es correcta.
         boton.setOnClickListener {
 
             val pass = input.text.toString()
 
-            if (pass == "astro") {
-                Toast.makeText(this, "Prueba completada", Toast.LENGTH_SHORT).show()
+            // 12. VALIDACIÓN DE CONTRASEÑA
+            // ----------------------------
+            // QUÉ ES:
+            // - Comparación entre el texto introducido y el valor almacenado en strings.xml.
+            //
+            // QUÉ HACE:
+            // - Si coincide → misión completada.
+            // - Si no coincide → error.
+            if (pass == getString(R.string.password_correct)) {
+
+                // 13. TOAST DE ÉXITO
+                // ------------------
+                Toast.makeText(this, getString(R.string.toast_mission_completed), Toast.LENGTH_SHORT).show()
+
+                // 14. CIERRE DEL DIÁLOGO
+                // ----------------------
                 dialog.dismiss()
+
             } else {
-                Toast.makeText(this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show()
+
+                // TOAST DE ERROR (el diálogo permanece abierto)
+                Toast.makeText(this, getString(R.string.toast_wrong_password), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -428,24 +562,55 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * activarUbicacion()
      * ------------------
      * QUÉ ES:
-     * - Método encargado de gestionar permisos y activar la capa de ubicación del mapa.
+     * - Método encargado de gestionar todo el proceso necesario para activar la capa de ubicación
+     *   del mapa y centrar la cámara en la posición real del usuario.
      *
      * QUÉ HACE:
-     * - Comprueba permisos.
-     * - Activa la ubicación.
-     * - Obtiene la última ubicación conocida.
-     * - Mueve la cámara hacia la posición real del usuario.
+     * - Comprueba si el permiso ACCESS_FINE_LOCATION está concedido.
+     * - Si no lo está, solicita el permiso al usuario y detiene la ejecución.
+     * - Si el permiso está concedido:
+     *      1. Activa la capa de ubicación del mapa (punto azul).
+     *      2. Solicita la última ubicación conocida mediante FusedLocationProviderClient.
+     *      3. Si existe ubicación → mueve la cámara a esa posición con zoom 15.
+     *      4. Si NO existe ubicación → aplica un fallback centrando la cámara en Andalucía.
      *
      * POR QUÉ EXISTE:
-     * - Google Maps no puede mostrar la ubicación sin permisos explícitos.
-     * - Centraliza toda la lógica de activación de ubicación.
+     * - Google Maps no puede mostrar la ubicación del usuario sin permisos explícitos.
+     * - La ubicación puede ser null si el dispositivo no tiene datos recientes (modo avión, GPS apagado, reinicio, etc.).
+     * - Este método centraliza toda la lógica necesaria para activar la ubicación de forma segura.
+     *
+     * CÓMO FUNCIONA INTERNAMENTE:
+     * - FusedLocationProviderClient consulta varias fuentes (GPS, WiFi, redes móviles, sensores)
+     *   y devuelve la última ubicación conocida sin necesidad de activar el GPS continuamente.
+     * - map.isMyLocationEnabled activa la capa visual del punto azul.
+     * - CameraUpdateFactory.newLatLngZoom crea una animación de cámara hacia la coordenada indicada.
+     *
+     * RIESGOS:
+     * - Si se llama sin permisos → SecurityException.
+     * - Si location es null → no se puede centrar la cámara en el usuario.
+     * - Si el GPS está desactivado, la ubicación puede tardar en aparecer.
+     *
+     * NOTA:
+     * - El fallback evita que la cámara se quede quieta cuando no hay ubicación disponible.
      */
     @SuppressLint("MissingPermission")
     private fun activarUbicacion() {
 
+        // 1. COMPROBACIÓN DE PERMISOS
+        // ---------------------------
+        // QUÉ ES:
+        // - checkSelfPermission revisa si el usuario ha concedido el permiso de ubicación fina.
+        //
+        // QUÉ HACE:
+        // - Si el permiso NO está concedido → se solicita al usuario.
+        //
+        // POR QUÉ EXISTE:
+        // - Android obliga a pedir permisos en tiempo de ejecución para proteger la privacidad.
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
 
+            // Solicita el permiso al usuario.
+            // requestPermissions lanza un cuadro de diálogo del sistema.
             requestPermissions(
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 1
@@ -453,28 +618,71 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             return
         }
 
+
+        // 2. ACTIVAR LA CAPA DE UBICACIÓN DEL MAPA
+        // -----------------------------------------
+        // QUÉ ES:
+        // - isMyLocationEnabled activa el punto azul y el botón de centrar ubicación.
+        //
+        // QUÉ HACE:
+        // - Muestra la ubicación del usuario en el mapa.
+        //
+        // RIESGO:
+        // - Si no hay permisos, lanza SecurityException (por eso se comprueba antes).
         map.isMyLocationEnabled = true
 
+
+        // 3. OBTENER LA ÚLTIMA UBICACIÓN CONOCIDA
+        // ----------------------------------------
+        // QUÉ ES:
+        // - lastLocation es una llamada asíncrona que devuelve la última ubicación registrada.
+        //
+        // QUÉ HACE:
+        // - Si existe → devuelve un objeto Location.
+        // - Si no existe → devuelve null.
+        //
+        // POR QUÉ EXISTE:
+        // - Es más rápido que pedir una ubicación nueva.
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
+            // 4. SI EXISTE UBICACIÓN REAL
+            // ---------------------------
             if (location != null) {
 
+                // Convertimos la ubicación a LatLng (formato de Google Maps).
                 val miUbicacion = LatLng(location.latitude, location.longitude)
 
+                // Movemos la cámara hacia la ubicación real del usuario.
                 map.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(miUbicacion, 15f)
                 )
 
             } else {
+
+                // 5. FALLBACK CUANDO LA UBICACIÓN ES NULL
+                // ----------------------------------------
+                // QUÉ ES:
+                // - Un mensaje temporal que informa al usuario.
+                //
+                // POR QUÉ EXISTE:
+                // - La ubicación puede ser null si:
+                //   * El GPS está apagado
+                //   * El móvil acaba de encenderse
+                //   * No hay datos recientes
+                //   * Está en interiores sin señal
                 Toast.makeText(this, "Buscando ubicación...", Toast.LENGTH_SHORT).show()
 
+                // Coordenada alternativa para no dejar la cámara quieta.
                 val andalucia = LatLng(37.5, -4.5)
+
+                // Movemos la cámara a un punto general.
                 map.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(andalucia, 10f)
                 )
             }
         }
     }
+
 
 
 
